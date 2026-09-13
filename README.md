@@ -60,12 +60,27 @@ extra patch is regression surface.
 list it as a requirement. Each release links the version it was tested with —
 11.0_1 wants
 [1.28.1](https://gstreamer.freedesktop.org/data/pkg/osx/1.28.1/gstreamer-1.0-1.28.1-universal.pkg).
-Install it **for all users**, or Wine won't find it:
+It must be installed **for all users** — Wine looks in `/Library/Frameworks/`,
+and a user-only install lands in `~/Library/Frameworks/` where it won't be
+found.
+
+The package isn't notarized by Apple, so macOS will refuse it with *"Apple
+could not verify ... is free of malware"*. That's expected — GStreamer's
+official builds come from freedesktop.org, not the App Store. Check you
+downloaded it from `gstreamer.freedesktop.org` rather than a mirror, then clear
+the quarantine flag the browser set and install from the CLI, which sidesteps
+the Gatekeeper double-click check:
 
 ```bash
+xattr -dr com.apple.quarantine ~/Downloads/gstreamer-1.0-1.28.1-universal.pkg
 sudo installer -pkg ~/Downloads/gstreamer-1.0-1.28.1-universal.pkg -target /
 ls -d /Library/Frameworks/GStreamer.framework    # verify
 ```
+
+`-target /` is what makes it an all-users install. If you'd rather use the GUI:
+try to open the pkg, let it fail, then go to **System Settings → Privacy &
+Security**, scroll to the Security section, and click **Open Anyway**. On recent
+macOS the right-click → Open trick no longer works for this particular message.
 
 Only one GStreamer can be installed at a time — the framework occupies the
 `Versions/1.0` slot regardless of release, and 1.0 is the *API* version. That's
