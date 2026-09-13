@@ -42,6 +42,11 @@ find "/Applications/<bundle name>.app" -type f -name wine64
 Note: with recent Gcenx builds you want `wine64`, not `wine`. The plain `wine`
 binary is either absent or wrong.
 
+## 1,5 Alternatively, more recent wine without metal 3d
+
+Head there https://github.com/Gcenx/macOS_Wine_builds/releases?page=2#release-11.0_1 and
+install the gstreamer package and this
+
 ## 2. Rosetta 2
 
 Required regardless — GPTK's wine is x86_64.
