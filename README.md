@@ -120,14 +120,22 @@ or Gatekeeper will refuse it:
 xattr -dr com.apple.quarantine "/Applications/<bundle name>.app"
 ```
 
-Find the wine binary — the layout varies between releases:
+Find the wine binary — the layout and the binary name both vary:
 
 ```bash
-find "/Applications/<bundle name>.app" -type f -name wine64
+find "/Applications/<bundle name>.app" -type f -perm +111 -name 'wine*'
 ```
 
-Use `wine64`, not `wine`. On recent builds the plain `wine` binary is absent or
-wrong.
+**Which binary depends on the route.** Modern Wine consolidated to a single
+`wine` binary under the new WoW64 design, so the 11.x WineHQ builds have no
+`wine64` at all — use `wine`. GPTK is Wine 7.7, from before that change, and
+needs `wine64`; on those builds the plain `wine` is absent or wrong.
+
+Sanity-check whichever you found:
+
+```bash
+"<path>/wine" --version
+```
 
 ## 2. Rosetta 2
 
@@ -148,12 +156,12 @@ missing.
 #   source ~/.df-steam/env.sh
 #
 # Edit WINE to point at your Wine install. Find it with:
-#   find /Applications/<bundle>.app -type f -name wine64
+#   find /Applications/<bundle>.app -type f -perm +111 -name 'wine*'
 
 export DF_ROOT="$HOME/.df-steam"
 
-# Must be wine64, not wine.
-export WINE="/Applications/Wine Stable.app/Contents/Resources/wine/bin/wine64"
+# WineHQ 11.x: 'wine'. GPTK 7.7: 'wine64'.
+export WINE="/Applications/Wine Stable.app/Contents/Resources/wine/bin/wine"
 
 export WINEPREFIX="$DF_ROOT/prefix"
 
@@ -303,7 +311,7 @@ install, the prefix, and winetricks (steps 1–5) are yours to do by hand.
 mkdir -p ~/.df-steam
 cp env.sh df-steam.sh mods ~/.df-steam/
 chmod +x ~/.df-steam/df-steam.sh
-$EDITOR ~/.df-steam/env.sh        # set WINE to your wine64
+$EDITOR ~/.df-steam/env.sh        # set WINE to your wine binary
 
 ~/.df-steam/df-steam.sh install   # steamcmd + game files + mods
 ~/.df-steam/df-steam.sh run       # launch
